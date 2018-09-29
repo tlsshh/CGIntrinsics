@@ -1,6 +1,7 @@
 # virtualenv
 
 # Exclude directories
+dataset/
 
 # PyCharm
 #.idea/

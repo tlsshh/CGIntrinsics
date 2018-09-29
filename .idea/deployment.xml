@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="Always" serverName="165">
+    <serverData>
+      <paths name="165">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/PytorchProjects/CGIntrinsics" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath path="/PytorchProjects/CGIntrinsics/py2env" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ALWAYS" />
+  </component>
+</project>
