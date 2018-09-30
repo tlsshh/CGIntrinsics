@@ -48,7 +48,8 @@ class Intrinsics_Model(BaseModel):
 
         # # TESTING
         if not self.isTrain:
-            model_parameters = self.load_network(model, 'G', 'cgintrinsics_iiw_saw_final')
+            # model_parameters = self.load_network(model, 'G', 'cgintrinsics_iiw_saw_final')
+            model_parameters = self.load_network(model, 'G', opt.which_epoch)
             model.load_state_dict(model_parameters)
 
         self.netG = model

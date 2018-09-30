@@ -18,22 +18,21 @@ import math
 
 batch_size = 16
 
-train_on_IIW = False
-train_on_SAW = False
-
+train_on_IIW = True
+train_on_SAW = True
 
 opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
-root = "/home/zl548/phoenix24/"
-full_root = root +'/phoenix/S6/zl548/'
+root = ""
+full_root = root +'./'
 
-train_list_CGIntrinsics = full_root + '/CGIntrinsics/intrinsics_final/train_list/'
+train_list_CGIntrinsics = full_root + 'CGIntrinsics/intrinsics_final/train_list/'
 data_loader_S = CreateDataLoaderCGIntrinsics(full_root, train_list_CGIntrinsics)
 
-train_list_Render = full_root + '/CGIntrinsics/intrinsics/render_list/'
+train_list_Render = full_root + 'CGIntrinsics/intrinsics_final/render_list/'
 data_loader_Render = CreateDataLoaderRender(full_root, train_list_Render)
 
 if train_on_IIW:
-    train_list_IIW = full_root + '/CGIntrinsics/IIW/train_list/'
+    train_list_IIW = full_root + 'CGIntrinsics/IIW/train_list/'
     data_loader_IIW = CreateDataLoaderIIW(full_root, train_list_IIW, 0)
     dataset_IIW = data_loader_IIW.load_data()
     dataset_size_IIW = len(data_loader_IIW)
@@ -41,7 +40,7 @@ if train_on_IIW:
     iterator_IIW = iter(dataset_IIW)
 
 if train_on_SAW:
-    train_list_SAW = full_root + '/CGIntrinsics/SAW/train_list/'
+    train_list_SAW = full_root + 'CGIntrinsics/SAW/train_list/'
     data_loader_SAW = CreateDataLoaderSAW(full_root, train_list_SAW, 0)
     dataset_SAW = data_loader_SAW.load_data()
     dataset_size_SAW = len(data_loader_SAW)
@@ -94,6 +93,7 @@ for epoch in range(0, 50):
     if epoch > 0 and epoch % 16 ==0:
         model.scaled_learning_rate(rate=2.)
 
+    loss = 0
     for i, data in enumerate(dataset_CGIntrinsics):
         print('CGIntrinsics Intrinsics: epoch %d, iteration %d, best_loss %f num_iterations %d best_epoch %d' % (epoch, i, best_loss, num_iterations, best_epoch) )
         stacked_img = data['img_1']
@@ -101,7 +101,7 @@ for epoch in range(0, 50):
 
         data_set_name = 'CGIntrinsics'
         model.set_input(stacked_img, targets)
-        model.optimize_intrinsics(epoch, data_set_name)        
+        loss += model.optimize_intrinsics(epoch, data_set_name)
 
 
         if train_on_IIW:
@@ -122,7 +122,7 @@ for epoch in range(0, 50):
             targets = data_IIW['target_1']
 
             model.set_input(stacked_img, targets)
-            model.optimize_intrinsics(epoch, data_set_name)
+            loss += model.optimize_intrinsics(epoch, data_set_name)
 
         if train_on_SAW:
             print('SAW Intrinsics: %d epoch %d, iteration %d, best_loss %f num_iterations %d best_epoch %d' % (count_saw%num_orientation, epoch, i, best_loss, num_iterations, best_epoch) )
@@ -140,14 +140,14 @@ for epoch in range(0, 50):
             targets = data_SAW['target_1']
 
             model.set_input(stacked_img, targets)
-            model.optimize_intrinsics(epoch, data_set_name)
+            loss += model.optimize_intrinsics(epoch, data_set_name)
 
         # Optimize for small number of super high quality rendered images
         os_t += 1
         if os_t % 10 == 0:
             # START Opedsurface
             data_R = next(iterator_Render, None)
-            # end of one epoch 
+            # end of one epoch
             if data_R is None:
                 iterator_Render = iter(dataset_Render)
                 data_R = next(iterator_Render, None)
@@ -157,10 +157,15 @@ for epoch in range(0, 50):
             data_set_name = 'Render'
 
             model.set_input(stacked_img_OS, targets_OS)
-            model.optimize_intrinsics(epoch, data_set_name)
+            loss += model.optimize_intrinsics(epoch, data_set_name)
 
             print('Render: epoch %d, iteration %d, best_loss %f num_iterations %d best_epoch %d' % (epoch, i, best_loss, num_iterations, best_epoch) )
-            #  END Rendering 
+            #  END Rendering
+
+    if loss < best_loss:
+        best_loss = loss
+        print('Update best loss: epoch %d, best loss %f' % (epoch, best_loss))
+        model.save(epoch)
 
 
 print("we are done!!!!!")
