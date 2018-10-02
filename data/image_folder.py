@@ -130,13 +130,16 @@ class CGIntrinsicsImageFolder(data.Dataset):
     def load_CGIntrinsics(self, path):
 
         img_path = self.root + "/CGIntrinsics/intrinsics_final/images/" + path
+        # print('loading %s ...' % img_path)
         srgb_img = np.float32(io.imread(img_path))/ 255.0
         file_name = path.split('/')
 
         R_path = self.root + "/CGIntrinsics/intrinsics_final/images/" + file_name[0] + "/" + file_name[1][:-4] + "_albedo.png"
+        # print('loading %s ...' % R_path)
         gt_R = np.float32(io.imread(R_path))/ 255.0
 
         mask_path = self.root + "/CGIntrinsics/intrinsics_final/images/" + file_name[0] + "/" + file_name[1][:-4] + "_mask.png"
+        # print('loading %s ...' % mask_path)
         mask = np.float32(io.imread(mask_path))/ 255.0
         
         gt_R_gray = np.mean(gt_R, 2)
@@ -191,6 +194,7 @@ class CGIntrinsicsImageFolder(data.Dataset):
         return srgb_img, gt_R, gt_S, mask, random_filp
 
     def __getitem__(self, index):
+        # print('load index %d' % index)
         targets_1 = {}
         img_path = self.img_list[index]
         # split_img_path = img_path.split('/')

@@ -15,25 +15,25 @@ def CreateDataLoader(_root, _list_dir):
     # data_loader.initialize(opt)
     return data_loader
 
-def CreateDataLoaderIIW(_root, _list_dir, mode):
+def CreateDataLoaderIIW(_root, _list_dir, mode, _batch_size=16):
     data_loader = None
     from data.aligned_data_loader import IIWDataLoader
-    data_loader = IIWDataLoader(_root, _list_dir, mode)
+    data_loader = IIWDataLoader(_root, _list_dir, mode, _batch_size)
 
     return data_loader
 
 
-def CreateDataLoaderSAW(_root, _list_dir, mode):
+def CreateDataLoaderSAW(_root, _list_dir, mode, _batch_size=16):
     data_loader = None
     from data.aligned_data_loader import SAWDataLoader
-    data_loader = SAWDataLoader(_root, _list_dir, mode)
+    data_loader = SAWDataLoader(_root, _list_dir, mode, _batch_size)
     return data_loader
 
 
-def CreateDataLoaderRender(_root, _list_dir):
+def CreateDataLoaderRender(_root, _list_dir, _batch_size=1):
     data_loader = None
     from data.aligned_data_loader import RenderDataLoader
-    data_loader = RenderDataLoader(_root, _list_dir)
+    data_loader = RenderDataLoader(_root, _list_dir, _batch_size)
 
     return data_loader
 
@@ -54,10 +54,10 @@ def CreateDataLoaderOpenSurfaces(_root, _list_dir, mode):
     return data_loader
 
 
-def CreateDataLoaderCGIntrinsics(_root, _list_dir):
+def CreateDataLoaderCGIntrinsics(_root, _list_dir, _batch_size=16):
     data_loader = None
     from data.aligned_data_loader import CGIntrinsics_DataLoader
-    data_loader = CGIntrinsics_DataLoader(_root, _list_dir)
+    data_loader = CGIntrinsics_DataLoader(_root, _list_dir, _batch_size)
     return data_loader
 
 
