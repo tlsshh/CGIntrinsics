@@ -47,10 +47,12 @@ class Intrinsics_Model(BaseModel):
                                         opt.which_model_netG, 'batch', opt.use_dropout, self.gpu_ids)
 
         # # TESTING
-        if not self.isTrain:
+        # if not self.isTrain:
+        if opt.which_epoch != 'None':
             # model_parameters = self.load_network(model, 'G', 'cgintrinsics_iiw_saw_final')
             model_parameters = self.load_network(model, 'G', opt.which_epoch)
             model.load_state_dict(model_parameters)
+            print('Load model: %s' % opt.which_epoch)
 
         self.netG = model
 
@@ -144,7 +146,16 @@ class Intrinsics_Model(BaseModel):
         self.old_lr = lr
 
 
-    def compute_pr(self, pixel_labels_dir, splits_dir, dataset_split, class_weights, bl_filter_size, img_dir, thres_count=400):
+    def predict_images(self, input):
+        self.switch_to_eval()
+        input_images = Variable(input.float().cuda(), requires_grad = False)
+        prediction_R, prediction_S  = self.netG.forward(input_images)
+        self.switch_to_train()
+        return prediction_R.data, prediction_S.data
+
+
+    def compute_pr(self, pixel_labels_dir, splits_dir, dataset_split, class_weights, bl_filter_size, img_dir,
+                   thres_count=400, display_process=True):
 
         thres_list = saw_utils.gen_pr_thres_list(thres_count)
         photo_ids = saw_utils.load_photo_ids_for_split(
@@ -163,7 +174,8 @@ class Intrinsics_Model(BaseModel):
 
         # compute PR 
         rdic_list = self.get_precision_recall_list_new(pixel_labels_dir=pixel_labels_dir, thres_list=thres_list,
-            photo_ids=photo_ids, class_weights=class_weights, bl_filter_size = bl_filter_size, img_dir=img_dir)
+            photo_ids=photo_ids, class_weights=class_weights, bl_filter_size = bl_filter_size, img_dir=img_dir,
+            display_process=display_process)
 
         plot_arr = np.empty((len(rdic_list) + 2, 2))
 
@@ -207,7 +219,7 @@ class Intrinsics_Model(BaseModel):
 
 
     def get_precision_recall_list_new(self, pixel_labels_dir, thres_list, photo_ids,
-                                  class_weights, bl_filter_size, img_dir):
+                                  class_weights, bl_filter_size, img_dir, display_process=True):
 
         output_count = len(thres_list)
         overall_conf_mx_list = [
@@ -219,7 +231,8 @@ class Intrinsics_Model(BaseModel):
         total_num_img = len(photo_ids)
 
         for photo_id in (photo_ids):
-            print("photo_id ", count, photo_id, total_num_img)
+            if display_process:
+                print("photo_id ", count, photo_id, total_num_img)
             # load photo using photo id, hdf5 format 
             img_path = img_dir + str(photo_id) + ".png"
 

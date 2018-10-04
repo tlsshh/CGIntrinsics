@@ -9,17 +9,10 @@ from data.data_loader import CreateDataLoader
 from models.models import create_model
 # from data.data_loader import CreateDataLoader_TEST
 from data.data_loader import CreateDataLoaderIIWTest
-
-opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
-# opt = TestOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
-
-root = ""
-full_root = root +'./'
-
-model = create_model(opt)
+from util import util_extra
 
 
-def test_iiw(model, list_name):
+def test_iiw(model, list_name, full_root='./', display_process=True, visualize_dir=None):
     total_loss =0.0
     total_loss_eq =0.0
     total_loss_ineq =0.0
@@ -44,13 +37,28 @@ def test_iiw(model, list_name):
             total_loss_ineq += total_whdr_ineq
 
             total_count += count
-            print("Testing WHDR error ",j, i , total_loss/total_count)
+            if display_process:
+                print("Testing WHDR error ",j, i , total_loss/total_count)
+
+            if visualize_dir is not None:
+                pred_R, pred_S = model.predict_images(stacked_img)
+                util_extra.visualize_results(visualize_dir, pred_R[0].cpu(), pred_S[0].cpu(),
+                                             stacked_img[0].cpu(), targets['chromaticity'][0].cpu())
 
     return total_loss/(total_count), total_loss_eq/total_count, total_loss_ineq/total_count
 
 
-print("WE ARE IN TESTING PHASE!!!!")
-WHDR, WHDR_EQ, WHDR_INEQ = test_iiw(model, 'test_list/')
-print('WHDR %f'%WHDR)
+if __name__ == '__main__':
+    # opt = TrainOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
+    opt = TestOptions().parse()  # set CUDA_VISIBLE_DEVICES before import torch
 
-print("We are done")
+    root = ""
+    full_root = root + './'
+
+    model = create_model(opt)
+
+    print("WE ARE IN TESTING PHASE!!!!")
+    WHDR, WHDR_EQ, WHDR_INEQ = test_iiw(model, 'test_list/', full_root, True, opt.results_dir+'/test_iiw')
+    print('WHDR %f' % WHDR)
+
+    print("We are done")
