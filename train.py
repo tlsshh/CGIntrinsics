@@ -26,7 +26,7 @@ root = ""
 full_root = root +'./'
 
 train_list_CGIntrinsics = full_root + 'CGIntrinsics/intrinsics_final/train_list/'
-data_loader_S = CreateDataLoaderCGIntrinsics(full_root, train_list_CGIntrinsics)
+data_loader_S = CreateDataLoaderCGIntrinsics(full_root, train_list_CGIntrinsics, batch_size)
 
 train_list_Render = full_root + 'CGIntrinsics/intrinsics_final/render_list/'
 data_loader_Render = CreateDataLoaderRender(full_root, train_list_Render)
@@ -62,7 +62,7 @@ model.switch_to_train()
 
 
 total_steps = 0
-best_loss = 100
+best_loss = 10000000
 
 
 torch.backends.cudnn.enabled = True
