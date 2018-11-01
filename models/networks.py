@@ -1134,11 +1134,11 @@ class JointLoss(nn.Module):
 
             R_loss = lambda_CG * self.LinearScaleInvarianceFramework(torch.exp(prediction_R), gt_R, mask_R, 0.5)            
             
-            # using ScaleInvarianceFramework could achieve better performance if we train on both IIW and SAW,
+            # using ScaleInvarianceFramework might achieve better performance if we train on both IIW and SAW,
             # but LinearScaleInvarianceFramework could produce better perforamnce if trained on CGIntrinsics only
 
-            # S_loss = lambda_CG * self.LinearScaleInvarianceFramework(torch.exp(prediction_S), gt_S, mask_S, 0.5)
-            S_loss = lambda_CG * self.ScaleInvarianceFramework(prediction_S, torch.log(gt_S), mask_S, 0.5)  
+            S_loss = lambda_CG * self.LinearScaleInvarianceFramework(torch.exp(prediction_S), gt_S, mask_S, 0.5)
+            # S_loss = lambda_CG * self.ScaleInvarianceFramework(prediction_S, torch.log(gt_S), mask_S, 0.5)  
 
             reconstr_loss = lambda_CG  * self.w_reconstr * self.SUNCGReconstLoss(torch.exp(prediction_R), torch.exp(prediction_S), mask_img, targets)
 
@@ -1162,15 +1162,14 @@ class JointLoss(nn.Module):
 
             R_loss = lambda_CG *self.LinearScaleInvarianceFramework(torch.exp(prediction_R), gt_R, mask_R, 0.5)            
 
-            # using ScaleInvarianceFramework could achieve better performance if we train on both IIW and SAW,
+            # using ScaleInvarianceFramework might achieve better performance if we train on both IIW and SAW,
             # but LinearScaleInvarianceFramework could produce better perforamnce if trained on CGIntrinsics only
-            
-            # S_loss = lambda_CG * self.LinearScaleInvarianceFramework(torch.exp(prediction_S), gt_S, mask_S, 0.5)
-            S_loss = lambda_CG * self.ScaleInvarianceFramework(prediction_S, torch.log(gt_S), mask_S, 0.5)  
+            S_loss = lambda_CG * self.LinearScaleInvarianceFramework(torch.exp(prediction_S), gt_S, mask_S, 0.5)
+            # S_loss = lambda_CG * self.ScaleInvarianceFramework(prediction_S, torch.log(gt_S), mask_S, 0.5)  
 
             reconstr_loss = lambda_CG  * self.w_reconstr * self.SUNCGReconstLoss(torch.exp(prediction_R), torch.exp(prediction_S), mask_img, targets)
             
-            # Why put this? Because the some ground truth shadings are nosiy 
+            # Why put this? Because some ground truth shadings are nosiy 
             Ss_loss = lambda_CG * self.w_ss_dense *  self.BilateralRefSmoothnessLoss(prediction_S, targets, 'S', 2)
 
             total_iiw_loss = 0
@@ -1299,13 +1298,9 @@ class JointLoss(nn.Module):
         
         count = float(0) 
 
-        prediction_R = torch.exp(prediction_R)
-        prediction_R = torch.pow(prediction_R, 0.4545)
-
-
         for i in range(0, prediction_R.size(0)):
             prediction_R_np = prediction_R.data[i,:,:,:].cpu().numpy()
-            prediction_R_np = np.transpose(prediction_R_np, (1,2,0))
+            prediction_R_np = np.transpose(np.exp(prediction_R_np * 0.4545), (1,2,0))
 
             # o_h = targets['oringinal_shape'][0].numpy()
             # o_w = targets['oringinal_shape'][1].numpy()

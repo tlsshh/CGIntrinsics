@@ -29,20 +29,33 @@ The code skeleton is based on "https://github.com/junyanz/pytorch-CycleGAN-and-p
 ```bash
     python train.py
 ```
+#### UPDATES: EASY WAY to get predictions/evaluations on the IIW/SAW test sets:
+Since it seems some people have difficulty running evaluation, we provide precomputed predictions on IIW test set and SAW test set.
+* You need to download precomputed predictions for IIW test set in hdf5 format in http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/cgi_pred_iiw.zip
+* To get evalution results on IIW test set, download IIW dataset and run
+```bash
+    python compute_iiw_whdr.py
+```
+(you might need to change judgement_path in this python script to fit to your IIW data path)
+* You need to download precomputed predictions for SAW test set in hdf5 format in 
+http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/cgi_pred_saw.zip
+* To get evalution results on SAW test set, download SAW dataset and run
+```bash
+    python compute_saw_ap.py
+```
+You need modify 'full_root' in this script and to point to the SAW directory you download. To evlaute on unweighted AP% described in the paper, set 'mode = 0' in compute_saw_ap.py and to evaluate on weighted (chanllenging) AP% described in the paper, set 'mode=1' in compute_saw_ap.py.
 
-#### Evaluation on the IIW/SAW test splits:
-* Download IIW densely connected pair-wise juedgement we precomputed in our website (http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/IIW.zip) and original images and data in original IIW link (http://opensurfaces.cs.cornell.edu/publications/intrinsic/#download). 
+* Note: I forgot to update SAW performance from our models trained our final released dataset in camera ready version of ECCV paper, so if you run on SAW test set, you will get 99.11% for unweighted AP% and 97.93% for weighted AP%, which is slightly better than what was described in the paper. I will update paper to reflect this change in ArXiv soon.
+
+#### Evaluation on the SAW test set:
 * Download SAW list in our website (http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/SAW.zip) and original data in original SAW website (https://github.com/kovibalu/saw_release).
-* Download pretrained model from (comming soon!) and put it in "checkpoints/test_local/cgintrinsics_iiw_saw_final_net_G.pth"
+* Download pretrained model from http://www.cs.cornell.edu/projects/cgintrinsics/cgintrinsics_iiw_saw_final_net_G.pth and put it in "checkpoints/test_local/cgintrinsics_iiw_saw_final_net_G.pth"
 * Change to "self.isTrain = False" in python file "/options/train_options.py"
 * In CGIntrinsics, you should have at least 2 folders (1) IIW (2) SAW. You should put original IIW png and json you download from http://opensurfaces.cs.cornell.edu/publications/intrinsic/#download in CGIntrinsics/IIW/data/, and you should put original corresponding folders you download from https://github.com/kovibalu/saw_release in folders "CGIntrinsics/SAW/saw_images_512" and "CGIntrinsics/SAW/saw_pixel_labels".
 * Change to "self.isTrain = False" in python file "/options/train_options.py"
-* To run evaluation on IIW test split,, change the path variable "root" and "full_root" and run:
-```bash
-    python test_iiw.py
-```
+
 * To run evaluation on SAW test split, change the path variable "root" and "full_root" and run:
 ```bash
     python test_saw.py
 ```
-Note that we only compute AP% (challenge) mentioned in the paper. If you want to compute original AP%, please refer to https://github.com/lixx2938/unsupervised-learning-intrinsic-images
+Note that we only compute AP% (challenge) descirbed in the paper. If you want to compute original AP%, please refer to https://github.com/lixx2938/unsupervised-learning-intrinsic-images
