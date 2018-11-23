@@ -30,22 +30,22 @@ The code skeleton is based on "https://github.com/junyanz/pytorch-CycleGAN-and-p
     python train.py
 ```
 #### UPDATES: EASY WAY to get predictions/evaluations on the IIW/SAW test sets:
-Since it seems some people have difficulty running evaluation, we provide precomputed predictions on IIW test set and SAW test set.
-* You need to download precomputed predictions for IIW test set in hdf5 format in http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/cgi_pred_iiw.zip
+Since it seems that some people have difficulty running evaluation, we provide precomputed predictions on IIW test set and SAW test set.
+* You need to download precomputed predictions for IIW test set in hdf5 format in http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/cgi_iiw.zip
 * To get evalution results on IIW test set, download IIW dataset and run
 ```bash
     python compute_iiw_whdr.py
 ```
 (you might need to change judgement_path in this python script to fit to your IIW data path)
 * You need to download precomputed predictions for SAW test set in hdf5 format in 
-http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/cgi_pred_saw.zip
+http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/cgi_saw.zip
 * To get evalution results on SAW test set, download SAW dataset and run
 ```bash
     python compute_saw_ap.py
 ```
 You need modify 'full_root' in this script and to point to the SAW directory you download. To evlaute on unweighted AP% described in the paper, set 'mode = 0' in compute_saw_ap.py and to evaluate on weighted (chanllenging) AP% described in the paper, set 'mode=1' in compute_saw_ap.py.
 
-* Note: I forgot to update SAW performance from our models trained our final released dataset in camera ready version of ECCV paper, so if you run on SAW test set, you will get 99.11% for unweighted AP% and 97.93% for weighted AP%, which is slightly better than what was described in the paper. I will update paper to reflect this change in ArXiv soon.
+* Note: our released model was trained on public released CGI dataset, and if you run on SAW test set, you will get 99.11% for unweighted AP% and 97.93% for weighted AP%, which is slightly better than what was described in the original ECCV camera ready paper. We have updated paper in ArXiv to reflect this change.
 
 #### Evaluation on the SAW test set:
 * Download SAW list in our website (http://www.cs.cornell.edu/projects/megadepth/dataset/cgintrinsics/SAW.zip) and original data in original SAW website (https://github.com/kovibalu/saw_release).
